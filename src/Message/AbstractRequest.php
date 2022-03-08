@@ -29,7 +29,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             'Content-Type' => 'application/json',
         ];
 
-        //print_r([$method, $url, $headers, json_encode($data)]);exit();
+        print_r([$method, $url, $headers, json_encode($data)]);//exit();
         $response = $this->httpClient->request(
             $method,
             $url,
@@ -98,6 +98,16 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('merchantToken', $value);
     }
 
+    public function getAccessToken()
+    {
+        return $this->getParameter('accessToken');
+    }
+
+    public function setAccessToken($value)
+    {
+        return $this->setParameter('accessToken', $value);
+    }
+
     public function setOrderId($value)
     {
         return $this->setParameter('order_id', $value);
@@ -155,11 +165,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $this->setParameter('clientFingerPrint', $value);
     }
 
-    public function getAmount()
-    {
-        return (int)round((parent::getAmount()*100.0), 0);
-    }
-
     public function getTransactionID()
     {
         return $this->getParameter('transactionId');
@@ -179,6 +184,26 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     {
         return $this->setParameter('tokenTransaction', $value);
     }
+
+    public function getShippingType()
+    {
+        return $this->getParameter('shipping_type');
+    }
+
+    public function setShippingType($value)
+    {
+        return $this->setParameter('shipping_type', $value);
+    }
+
+    public function getShippingPrice()
+    {
+        return $this->getParameter('shipping_price');
+    }
+
+    public function setShippingPrice($value)
+    {
+        return $this->setParameter('shipping_price', $value);
+    }
     
     public function getDueDate()
     {
@@ -196,7 +221,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             ++$ano;
         }
 
-        $dueDate = sprintf("%04d-%02d-%02d", $ano, $mes, $dia);
+        $dueDate = sprintf("%02d/%02d/%04d", $dia, $mes, $ano);
         $this->setDueDate($dueDate);
 
         return $dueDate;
@@ -232,7 +257,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getDataCreditCard()
     {
-        $this->validate('card');
+        $this->validate('card', 'clientIp', 'clientFingerPrint');
         $card = $this->getCard();
 
         //https://intermediador.dev.yapay.com.br/#/transacao-tabela-campos
@@ -245,7 +270,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
                 "available_payment_methods"=>"2,3,4,5,6,7,14,15,16,18,19,21,22,23",
                 "customer_ip"=>$this->getClientIp(),
                 "shipping_type"=>"Sedex",
-                "shipping_price"=>$this->getShippingCost(),
+                "shipping_price"=>$this->getShippingPrice(),
                 //"price_additional"=>"",
                 "price_discount"=>"",
                 "url_notification"=>$this->getNotifyUrl(),
@@ -270,8 +295,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getDataBoleto()
     {
+        $this->validate('clientIp');
         $customer = $this->getCustomerData();
-
 
         $data = [
             //"finger_print"=> $this->getClientFingerPrint(),
@@ -282,7 +307,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
                 "available_payment_methods"=>"2,3,4,5,6,7,14,15,16,18,19,21,22,23",
                 "customer_ip"=>$this->getClientIp(),
                 "shipping_type"=>"Sedex",
-                "shipping_price"=>$this->getShippingCost(),
+                "shipping_price"=>$this->getShippingPrice(),
                 //"price_additional"=>"",
                 "price_discount"=>"",
                 "url_notification"=>$this->getNotifyUrl(),
@@ -293,7 +318,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             //    ],
             "payment"=>[
                 "payment_method_id"=>"6",
-                "billet_date_expiration"=>getDueDate(),//TODO: formato dd/mm/yyy
+                "billet_date_expiration"=>$this->getDueDate(),//TODO: formato dd/mm/yyy
                 "split"=>"1"
                 ]
         ];
@@ -303,7 +328,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getDataPix()
     {
-        
+        $this->validate('clientIp');
+
         $data = [
             //"finger_print"=> $this->getClientFingerPrint(),
             "customer" => $this->getCustomerData(),
@@ -312,7 +338,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
                 "order_number"=>$this->getOrderId(),
                 "customer_ip"=>$this->getClientIp(),
                 "shipping_type"=>"Sedex",
-                "shipping_price"=>$this->getShippingCost(),
+                "shipping_price"=>$this->getShippingPrice(),
                 //"price_additional"=>"",
                 "url_notification"=>$this->getNotifyUrl(),
                 //"free"=>""//Campo Livre

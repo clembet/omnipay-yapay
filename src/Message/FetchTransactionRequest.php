@@ -5,8 +5,8 @@
 //https://intermediador.dev.yapay.com.br/#/notificacao-automatica-status-consulta-transacao  # usado ao receber uma notificação
 class FetchTransactionRequest extends AbstractRequest
 {
-    protected $resource = 'transactions/get_by_token_brief';
-    //protected $resource = 'transactions/get_by_token';
+    //protected $resource = 'transactions/get_by_token_brief';
+    protected $resource = 'transactions/get_by_token';
     protected $requestMethod = 'GET';
 
     /**
@@ -24,6 +24,6 @@ class FetchTransactionRequest extends AbstractRequest
     {
         $version = $this->getVersion();
         $endPoint = ($this->getTestMode()?$this->testEndpoint:$this->liveEndpoint);
-        return  "{$endPoint}/v{$version}/{$this->getResource()}?token_account={$this->getMerchantToken()}&token_transaction={$this->getTokenTransaction()}'";
+        return  "{$endPoint}/v{$version}/{$this->getResource()}?token_account={$this->getMerchantToken()}&token_transaction={$this->getTokenTransaction()}";
     }
 }

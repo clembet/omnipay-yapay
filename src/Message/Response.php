@@ -67,7 +67,9 @@ class Response extends AbstractResponse
     public function isPaid()
     {
         $status = $this->getStatus();
-        return $status==6;//Aprovada
+        $error = trim(@$this->data['data_response']['transaction']['payment']['payment_response']);
+        $response_code = trim(@$this->data['data_response']['transaction']['payment']['payment_response_code']);
+        return ($status==6 && ((strcmp($response_code, "00") == 0) || (strlen($error) <= 0)));//Aprovada
     }
 
     public function isAuthorized()
@@ -79,7 +81,8 @@ class Response extends AbstractResponse
     public function isPending()
     {
         $status = $this->getStatus();
-        return $status==4;//Aguardando Pagamento
+        $error = trim(@$this->data['data_response']['transaction']['payment']['payment_response']);
+        return ($status==4 && (strlen($error) <= 0));//Aguardando Pagamento
     }
 
     public function isVoided()
@@ -110,6 +113,9 @@ class Response extends AbstractResponse
                 if(isset($this->data['error_response ']['general_errors']))
                 return @$this->data['error_response ']['validation_errors']['code']." - ".@$this->data['error_response ']['validation_errors']['message'];
         }
+
+        if(isset($this->data['data_response']['transaction']['payment']['payment_response']) && (strlen($this->data['data_response']['transaction']['payment']['payment_response'])>5))
+            return $this->data['data_response']['transaction']['payment']['payment_response'];
 
         return null;
     }
@@ -144,8 +150,8 @@ class Response extends AbstractResponse
 
     public function getBase64ImageFromUrl($url)
     {
-        $type = pathinfo($url, PATHINFO_EXTENSION);
-        $data = file_get_contents($url);
+        $type = @pathinfo($url, PATHINFO_EXTENSION);
+        $data = @file_get_contents($url);
         if (!$data)
             return NULL;
 

@@ -60,6 +60,11 @@ class Gateway extends AbstractGateway
         return $this->setParameter('merchantToken', $value);
     }
 
+    public function parseResponse($data)
+    {
+        $request = $this->createRequest('\Omnipay\Yapay\Message\PurchaseRequest', []);
+        return new \Omnipay\Yapay\Message\Response($request, (array)$data);
+    }
 
     /**
      * Authorize Request

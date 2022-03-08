@@ -24,11 +24,15 @@ class VoidRequest extends AbstractRequest
 
     public function getData()
     {
-        $this->validate('transactionId', 'amount');
-        $data = parent::getData();
-        $data['transaction_id'] = $this->getTransactionID();
-        $data['refund_amount'] = $this->getAmount();
+        $this->validate('accessToken', 'transactionId', 'amount');
+        $data = [
+            "access_token" => $this->getAccessToken(),// o access_token você na "API de Autorização1" para maiores informações contactar integracao@yapay.com.br
+            "transaction_id" => $this->getTransactionID(),
+            "reason_cancellation_id"=> "6",
+            "refund_amount" => $this->getAmount()
+        ];
+
 
         return $data;
-    }   
+    }
 }
