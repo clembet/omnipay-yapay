@@ -29,7 +29,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             'Content-Type' => 'application/json',
         ];
 
-        print_r([$method, $url, $headers, json_encode($data)]);//exit();
+        //print_r([$method, $url, $headers, json_encode($data)]);//exit();
         $response = $this->httpClient->request(
             $method,
             $url,
