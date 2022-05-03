@@ -270,7 +270,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
                 "available_payment_methods"=>"2,3,4,5,6,7,14,15,16,18,19,21,22,23",
                 "customer_ip"=>$this->getClientIp(),
                 "shipping_type"=>"Sedex",
-                "shipping_price"=>$this->getShippingPrice(),
+                "shipping_price"=>$this->getShippingPrice(), // TODO: padronizar o nome igual com os outros drivers de omnipay
                 //"price_additional"=>"",
                 "price_discount"=>"",
                 "url_notification"=>$this->getNotifyUrl(),
